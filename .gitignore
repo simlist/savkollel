@@ -1,0 +1,12 @@
+.*
+!.gitignore
+*.pyc
+*~
+ENV*
+*egg*
+*build*
+*.whl
+*.sln
+*.suo
+*.pyproj
+*.sql*

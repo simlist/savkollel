@@ -8,11 +8,11 @@ class Customer(models.Model):
     name = models.CharField(max_length=100)
 
 class Produce(models.Model):
-    product = CharField(max_length=100)
+    product = models.CharField(max_length=100)
 
 class Order(models.Model):
     order_date = models.DateField()
-    customer = ForeignKey(Customer)
-    produce = ForeignKey(Produce)
-    quantity = IntegerField()
-
+    customer = models.ForeignKey(Customer)
+    produce = models.ForeignKey(Produce)
+    quantity = models.IntegerField(default=0)
+    status = models.BooleanField(default=False)
