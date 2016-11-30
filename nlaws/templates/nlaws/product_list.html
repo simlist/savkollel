@@ -1,0 +1,23 @@
+﻿{% extends 'nlaws/base.html' %}
+{% block title %}Order Form{% endblock %}
+{% block content %}
+    <h2 class="text-center">Order Form</h2>
+    <form class="form-horizontal" action={% url 'nlaws:shoppinglist' %} method="post">
+    {% csrf_token %}
+    {% for product in product_list %}
+    <div class="form-group">
+        <div class="col-xs-3 col-sm-2 col-md-1">
+            <input type="number" value="0" min="0" max="1000" step="1"
+                   class="form-control" name={{ product.id }} id={{ product.id }}>
+        </div>
+        <div class="col-xs-9 col-sm-10 col-md-11">
+            <label for={{ product.id }} class="control-label">{{ product.name }}</label>
+        </div>
+    </div>
+    {% endfor %}
+    <div class="form-group">
+        <div class="col-xs-offset-1 col-xs-11">
+            <button type="submit" class="btn btn-primary">Submit Order</button>
+        </div>
+</form>
+{% endblock %}
