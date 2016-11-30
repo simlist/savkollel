@@ -101,9 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Login
-# https://docs.djangoproject.com/en/1.10/ref/settings/#std:setting-LOGIN_URL
-LOGIN_URL = '/login/'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
