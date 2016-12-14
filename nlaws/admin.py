@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Product
+from .models import *
 
-admin.site.register(Product)
+models = [Product, Order, Invoice]
+admin.site.register(models)
