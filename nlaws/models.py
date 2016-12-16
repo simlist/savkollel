@@ -8,14 +8,24 @@ from django.contrib.auth.models import User
 class Product(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 
 class Order(models.Model):
     order_date = models.DateField()
     customer = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return '{0} {1}'.format(str(self.order_date), str(self.customer))
 
 class Invoice(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     produce = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField(default=1)
+
+    def __str__(self):
+        return '{0}-{1} {2}'.format(str(self.order),
+                                    str(self.quantity),
+                                    str(self.produce))
 
