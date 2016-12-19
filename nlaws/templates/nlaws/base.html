@@ -28,7 +28,7 @@
             <ul class="nav navbar-nav nav-tabs">
                 <li><a href={% url 'nlaws:shoppinglist' %}>New Shopping List</a></li>
                 <li><a href="#">Saved List</a></li>
-                <li><a href="#">Combine Lists</a></li>
+                <li><a href={% url 'nlaws:combine' %}>Combine Lists</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right nav-pills">
                 <li>Hello {{ user.username }}<a href={% url 'logout' %}>Sign out</a></li>

@@ -1,6 +1,18 @@
 ﻿{% extends 'nlaws/base.html' %}
 {%block title%}Combine lists{%endblock%}
 {%block content%}
-
+<h2 class="text-center">Combine Lists</h2>
+<ul class="list-group list-inline">
+    {% for key, val in customers_status.items %}
+        <li class="list-group-item {{val.format}}">
+            {{key}} -- {{val.status}}
+        </li>
+    {%endfor%}
+ </ul>
+<form method="post" action="{%url 'nlaws:combine'%}">
+    {% csrf_token %}
+    <input type="hidden" name="orderdate" value={{orderdate}}>
+    <button type="submit" class="btn btn-primary">Combine lists</button>
+</form>
 {%endblock%}
  

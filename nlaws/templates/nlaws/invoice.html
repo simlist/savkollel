@@ -1,0 +1,11 @@
+﻿{%extends 'nlaws/base.html'%}
+{%block title%}Combined order{%endblock%}
+{%block content%}
+    <h2 class="text-center">Combined order for {{orderdate}}</h2>
+    
+    <ul>
+    {% for item, quantity in combined_list.items %}
+        <li>{{quantity}} {{item}}</li>
+    {% endfor %}
+    </ul>
+{%endblock%}

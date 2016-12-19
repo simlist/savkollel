@@ -6,9 +6,11 @@ from django.contrib.auth.models import User
 from django.views.generic import ListView, FormView
 from django.urls import reverse
 from django.db import transaction
+from django.db.models import Max
 from django.http import HttpResponse
 
 from nlaws.models import Product, Order, Invoice
+from nlaws import utils
 #debug
 import traceback
 
@@ -42,7 +44,7 @@ class ShoppingList(LoginRequiredMixin, ListView):
                     quantity = int(data[key])
                     if quantity:
                         invoice = Invoice(order=order,
-                                          produce=Product.objects.get(pk=int(key)),
+                                          product=Product.objects.get(pk=int(key)),
                                           quantity=quantity)
                         invoice.full_clean()
                         invoice.save()
@@ -56,18 +58,47 @@ class Combine(LoginRequiredMixin, ListView):
     model = User
     
     def get(self, request, *args, **kwargs):
-        orderdate = request.GET.get('orderdate')
-        if orderdate is None:
-            orderdate = date.today()
-        else:
-            orderdatelist = [int(n) for n in orderdate.split('-')]
-            orderdate = date(*orderdatelist)
+        try:
+            orderdate = request.GET.get('orderdate')
+            if orderdate is None:
+                orderdate = date.today()
+            else:
+                orderdatelist = [int(n) for n in orderdate.split('-')]
+                orderdate = date(*orderdatelist)
         
-        orders = Order.objects.filter(orderdate__gte=orderdate)
-        actives = [order.customer.username for order in orders]
-        users = [user.username for user in User.objects.all()]
-        context = {'actives': actives, 'users': users}
+            orders = Order.objects.filter(order_date__gte=orderdate)
+            maxdate = orders.aggregate(Max('order_date'))['order_date__max']
+            orderdate = str(maxdate)
+            actives = [order.customer.username for order in orders]
+            users = [user.username for user in User.objects.all()]
+            customers_status = {}
+            for u in users:
+                if u in actives:
+                    customers_status[u] = {'status': 'Ready',
+                                           'format' :'list-group-item-success'}
+                else:
+                    customers_status[u] = {'status': 'No list submitted',
+                                           'format': 'list-group-item-danger'}
+                                           
+            context = {'customers_status': customers_status,
+                       'orderdate': str(orderdate)}
+            return render(request, r'nlaws/combine.html', context)
+        
+        except:
+            return HttpResponse(traceback.format_exc())
 
-        return render(request, r'nlaws/combine.html', context)
-
-
+    def post(self, request, *args, **qwargs):
+        
+        try:
+            datelist = [int(n) for n in request.POST['orderdate'].split('-')]
+            orderdate = date(*datelist)
+            query = Invoice.objects.filter(order__order_date__gte=orderdate).values('product__name', 'quantity')
+            dict = {}
+            dicts = [{key['product__name']: key['quantity']} for key in query]
+            combined_list = utils.merge_dicts(*dicts)
+            
+            context = {'orderdate': orderdate, 'combined_list': combined_list}
+            
+            return render(request, r'nlaws/invoice.html', context)
+        except:
+            return HttpResponse(traceback.format_exc())
