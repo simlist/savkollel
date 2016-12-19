@@ -11,6 +11,9 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Order(models.Model):
     order_date = models.DateField()
@@ -19,13 +22,19 @@ class Order(models.Model):
     def __str__(self):
         return '{0} {1}'.format(str(self.order_date), str(self.customer))
 
+    class Meta:
+        ordering = ['-order_date']
+
 class Invoice(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    produce = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveSmallIntegerField(default=1)
 
     def __str__(self):
         return '{0}-{1} {2}'.format(str(self.order),
                                     str(self.quantity),
-                                    str(self.produce))
+                                    str(self.product))
+
+    class Meta:
+        ordering = ['product']
 
