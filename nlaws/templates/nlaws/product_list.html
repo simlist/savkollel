@@ -12,14 +12,14 @@
                 <label for="pickupdate" class="control-label">Date for pickup:</label>
             </div>
             <div class="col-xs-6 col-md-3">
-                <input type="text" class="form-control" name="pickupdate" id="pickupdate">
+                <input type="text" class="form-control" name="pickupdate" id="pickupdate" required>
             </div>
         </div>
     {% for product in product_list %}
     <div class="form-group">
         <div class="col-xs-3 col-sm-2 col-md-1">
             <input type="number" value="0" min="0" max="1000" step="1"
-                   class="form-control" name={{ product.id }} id={{ product.id }}>
+                   class="form-control" name={{ product.id }} id={{ product.id }} required>
         </div>
         <div class="col-xs-9 col-sm-10 col-md-11">
             <label for={{ product.id }} class="control-label">{{ product.name }}</label>
