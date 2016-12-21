@@ -128,14 +128,14 @@ class ViewOrders(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
 
         query = Order.objects.filter(customer=request.user)
-        orderlist = [str(q.order_date) for q in query]
+        orderlist = [{'date': str(q.order_date), 'id': str(q.pk)} for q in query]
         context = {'orderlist': orderlist}
         return render(request, 'nlaws/orderslist.html', context)
 
 class DeleteOrder(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        orderdate = utils.date_from_string(request.GET.get('orderdate'))
+        key = int(request.GET['order'])
         order = Order.objects.filter(customer=request.user,
-                                     order_date=orderdate)
+                                     pk=key)
         order.delete()
         return redirect('/nlaws/orderslist')

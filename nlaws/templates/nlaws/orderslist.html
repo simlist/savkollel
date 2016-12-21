@@ -3,10 +3,10 @@
 {%block content%}
     <h2 class="text-center">View orders</h2>
     <ul class="list-group">
-    {% for order in orderlist%}
+    {% for order in orderlist %}
     <li class="list-group-item">
-        <a href="{% url 'nlaws:viewlist' %}?orderdate={{order| urlencode}}">{{order}}</a>
-        <a class="btn btn-danger" href="{% url 'nlaws:deleteorder'%}?orderdate={{order}}">Delete Order</a>
+        <a href="{% url 'nlaws:viewlist' %}?orderdate={{order.date| urlencode}}">{{order.date}}</a>
+        <a class="btn btn-danger" href="{% url 'nlaws:deleteorder'%}?order={{order.id| urlencode}}">Delete Order</a>
     </li>
     </ul>
     {%endfor%}
