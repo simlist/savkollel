@@ -1,5 +1,7 @@
 """This module contains utilities needed in the nlaws app"""
 
+import datetime
+
 def _inner_merge_dicts(dicts):
     if len(dicts) > 1:
         dict0 = dicts.pop()
@@ -20,3 +22,10 @@ def merge_dicts(*dicts):
     dict0 = dicts.pop().copy()
     dicts.append(dict0)
     return _inner_merge_dicts(dicts)
+
+def date_from_string(date):
+    """"Return date instance from string.
+    
+    Takes string in the form 'yyyy-mm-dd'.
+    """
+    return datetime.date(*[int(n) for n in date.split('-')])
