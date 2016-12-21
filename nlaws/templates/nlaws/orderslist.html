@@ -1,0 +1,13 @@
+﻿{%extends 'nlaws/base.html'%}
+{%block title%}View orders{%endblock%}
+{%block content%}
+    <h2 class="text-center">View orders</h2>
+    <ul class="list-group">
+    {% for order in orderlist%}
+    <li class="list-group-item">
+        <a href="{% url 'nlaws:viewlist' %}?orderdate={{order| urlencode}}">{{order}}</a>
+        <a class="btn btn-danger" href="{% url 'nlaws:deleteorder'%}?orderdate={{order}}">Delete Order</a>
+    </li>
+    </ul>
+    {%endfor%}
+{%endblock%} 
