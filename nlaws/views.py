@@ -81,7 +81,8 @@ class Combine(LoginRequiredMixin, View):
                                            'format': 'list-group-item-danger'}
                                            
             context = {'customers_status': customers_status,
-                       'orderdate': str(orderdate)}
+                       'orderdate': str(orderdate)
+                       }
             return render(request, r'nlaws/combine.html', context)
         
         except:
@@ -96,7 +97,7 @@ class Combine(LoginRequiredMixin, View):
             dicts = [{key['product__name']: key['quantity']} for key in query]
             combined_list = utils.merge_dicts(*dicts)
             
-            context = {'orderdate': orderdate, 'list': combined_list}
+            context = {'orderdate': orderdate, 'list': combined_list, 'title': 'Combined order'}
             
             return render(request, r'nlaws/invoice.html', context)
         except:
@@ -119,7 +120,10 @@ class ViewList(LoginRequiredMixin, View):
         orderdate = str(orderdate)
         order_list = [{dict['product__name']: dict['quantity']} for dict in query.values('product__name', 'quantity')]
         list = utils.merge_dicts(*order_list)
-        context = {'list': list, 'orderdate': orderdate}
+        username = request.user.username
+        context = {'list': list,
+                   'orderdate': orderdate,
+                   'title': "{0}'s order for".format(username)}
         return render(request, 'nlaws/invoice.html', context)
 
 
