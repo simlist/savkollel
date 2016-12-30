@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView
 from django.views import View
 from django.urls import reverse
 from django.db import transaction
