@@ -1,7 +1,7 @@
 ﻿{%extends 'nlaws/base.html'%}
-{%block title%}Combined order{%endblock%}
+{%block title%}{{title}}{%endblock%}
 {%block content%}
-    <h2 class="text-center">Combined order for {{orderdate}}</h2>
+    <h2 class="text-center">{{title}} for {{orderdate}}</h2>
     
     <ul>
     {% for item, quantity in list.items %}
