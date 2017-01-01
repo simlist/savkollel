@@ -1,0 +1,13 @@
+﻿{% extends 'nlaws/base.html' %}
+{%block title%}Add product{%endblock%}
+{%block content%}
+<h2 class="text-center">Add product</h2>
+<form method="post" action={% url 'nlaws:addproduct'%}>
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="productname">Product name</label>
+        <input type="text" class="form-control input-lg" name="productname" id="productname" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+</form>
+{%endblock%}

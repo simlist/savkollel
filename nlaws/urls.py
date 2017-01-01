@@ -7,5 +7,6 @@ urlpatterns = [url(r'^$', index, name='index'),
                url(r'^combine$', Combine.as_view(), name='combine'),
                url(r'^viewlist$', ViewList.as_view(), name='viewlist'),
                url(r'^orderslist$', ViewOrders.as_view(), name='orderslist'),
-               url(r'nlaws/deleteorder$', DeleteOrder.as_view(), name='deleteorder')
+               url(r'^deleteorder$', DeleteOrder.as_view(), name='deleteorder'),
+               url(r'^addproduct$', AddProduct.as_view(), name='addproduct')
                ]

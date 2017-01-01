@@ -19,6 +19,8 @@ def merge_dicts(*dicts):
     """Combine multiple dictionaries adding the values of duplicate keys. 
     """
     dicts = list(dicts)
+    if len(dicts) < 1:
+        return dicts
     dict0 = dicts.pop().copy()
     dicts.append(dict0)
     return _inner_merge_dicts(dicts)
