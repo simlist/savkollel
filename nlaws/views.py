@@ -143,3 +143,21 @@ class DeleteOrder(LoginRequiredMixin, View):
                                      pk=key)
         order.delete()
         return redirect('/nlaws/orderslist')
+
+
+class AddProduct(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'nlaws/addproduct.html')
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        name=request.POST['productname']
+            
+        try:
+            with transaction.atomic():
+                product = Product(name=name)
+                product.full_clean()
+                product.save()
+                return render(request, 'nlaws/index.html', {'text': 'Success!'})
+        except:
+            return render(request, 'nlaws/index.html', {'text': 'There were errors'})
