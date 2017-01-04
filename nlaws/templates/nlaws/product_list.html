@@ -12,14 +12,14 @@
                 <label for="pickupdate" class="control-label">Date for pickup:</label>
             </div>
             <div class="col-xs-6 col-md-3">
-                <input type="text" class="form-control" name="pickupdate" id="pickupdate" required value={{orderdate}}>
+                <input type="text" class="form-control" name="pickupdate" id="pickupdate" placeholder="Click for date" readonly value={{orderdate}}>
             </div>
         </div>
     {% for line in invoice %}
     <div class="form-group">
         <div class="col-xs-3 col-sm-2 col-md-1">
-            <input type="number" value={{line.quantity}} min="0" max="500" step="1"
-                   class="form-control" name={{ line.product.id }} id={{ line.product.id }} required>
+            <input type="number" min="0" max="500" step="1"
+                   class="form-control" name={{ line.product.id }} id={{ line.product.id }} value={{line.quantity}}>
         </div>
         <div class="col-xs-9 col-sm-10 col-md-11">
             <label for={{ line.product.id }} class="control-label">{{ line.product.name }}</label>
