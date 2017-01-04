@@ -2,10 +2,15 @@
 {%block title%}{{title}}{%endblock%}
 {%block content%}
     <h2 class="text-center">{{title}} for {{orderdate}}</h2>
-    
-    <ul>
-    {% for item, quantity in list.items %}
-        <li>{{quantity}} {{item}}</li>
-    {% endfor %}
-    </ul>
+    <form method="get" action={% url 'nlaws:shoppinglist' %}>
+        <input type="hidden" name="orderdate" value={{orderdate}}>
+        <ul>
+            {% for line in invoice_list %}
+                <li>{{line.quantity}} {{line.product}} 
+                    <input type="hidden" name={{line.product|urlencode}} value={{line.quantity}}>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit" class="btn btn-warning">Edit</button>
+    </form>
 {%endblock%}
