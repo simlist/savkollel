@@ -124,7 +124,6 @@ class ViewList(LoginRequiredMixin, View):
                                        order__customer=request.user)
                                             
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
-        orderdate = str(orderdate)
 #        order_list = [{dict['product__name']: dict['quantity']} for dict in query.values('product__name', 'quantity')]
 #        list = utils.merge_dicts(*order_list)
         username = request.user.username
