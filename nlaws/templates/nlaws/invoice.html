@@ -1,9 +1,10 @@
 ﻿{%extends 'nlaws/base.html'%}
 {%block title%}{{title}}{%endblock%}
 {%block content%}
-    <h2 class="text-center">{{title}} for {{orderdate}}</h2>
+    <h2 class="text-center">{{title}} for {{orderdate|date:"l M. j, Y"}}</h2>
     <form method="get" action={% url 'nlaws:shoppinglist' %}>
-        <input type="hidden" name="orderdate" value={{orderdate}}>
+        <input type="hidden" name="order" value="{{order}}">
+        <input type="hidden" name="orderdate" value="{{orderdate|date:"Y-n-j"}}">
         <ul>
             {% for line in invoice_list %}
                 <li>{{line.quantity}} {{line.product}} 
