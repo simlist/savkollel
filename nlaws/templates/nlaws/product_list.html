@@ -7,6 +7,7 @@
     <h2 class="text-center">Order Form</h2>
     <form class="form-horizontal" action={% url 'nlaws:shoppinglist' %} method="post">
     {% csrf_token %}
+        {%if order%}<input type="hidden" name="order" value={{order}}>{%endif%}
         <div class="form-group">
             <div class="col-xs-4 col-sm-2 col-md-2">
                 <label for="pickupdate" class="control-label">Date for pickup:</label>
