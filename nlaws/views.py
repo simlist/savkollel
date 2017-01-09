@@ -1,4 +1,5 @@
 from datetime import date
+import urllib
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -22,31 +23,41 @@ def index(request):
     return render(request, r'nlaws/index.html')
 
 
-class ShoppingList(LoginRequiredMixin, ListView):
+class ShoppingList(LoginRequiredMixin, View):
 
-    model = Product
+    def get(self, request, *args, **kwargs):
+        saved_dict = {}
+        orderdate = ''
+        if request.GET:
+            saved_dict = request.GET.copy()
+            orderdate = saved_dict.pop('orderdate', ['',])[0]
+            saved_dict = {urllib.unquote(n): int(saved_dict[n][0]) for n in saved_dict}  #dict comprehension
+        products = Product.objects.all()
+#        product_list = [{'id': str(n.id), 'name': urllib.unquote(n.name), 'value': int(saved_dict.get(n.name, [0,])[0])} for n in products]
+        invoice = [{'product': product, 'quantity': saved_dict.get(product.name, '')}
+                   for product in products]
+        context = {'orderdate': orderdate, 'invoice': invoice}
+        return render(request, 'nlaws/product_list.html', context)
+
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
 
         data = request.POST.copy()
-        pickupdate = [int(n) for n in data.pop('pickupdate')[0].split('-')]
-
-
         data.pop('csrfmiddlewaretoken')
+        pickupdate = utils.date_from_string(data.pop('pickupdate')[0])
 
         try:
             with transaction.atomic():
-                pickupdate = date(*pickupdate)
                 order = Order(order_date=pickupdate, customer=request.user)
                 order.full_clean()
                 order.save()
                 for key in data:
-                    quantity = int(data[key])
+                    quantity = data[key]
                     if quantity:
                         invoice = Invoice(order=order,
                                           product=Product.objects.get(pk=int(key)),
-                                          quantity=quantity)
+                                          quantity=int(quantity))
                         invoice.full_clean()
                         invoice.save()
                     
@@ -59,16 +70,9 @@ class Combine(LoginRequiredMixin, View):
     
     def get(self, request, *args, **kwargs):
         try:
-            orderdate = request.GET.get('orderdate')
-            if orderdate is None:
-                orderdate = date.today()
-            else:
-                orderdatelist = utils.date_from_string(orderdate)
-                orderdate = date(*orderdatelist)
-        
-            orders = Order.objects.filter(order_date__gte=orderdate)
-            maxdate = orders.aggregate(Max('order_date'))['order_date__max']
-            orderdate = str(maxdate)
+            today = date.today()
+            orders = Order.objects.filter(order_date__gte=today)
+            maxdate = str(orders.aggregate(Max('order_date'))['order_date__max'])
             actives = [order.customer.username for order in orders]
             users = [user.username for user in User.objects.all()]
             customers_status = {}
@@ -81,8 +85,7 @@ class Combine(LoginRequiredMixin, View):
                                            'format': 'list-group-item-danger'}
                                            
             context = {'customers_status': customers_status,
-                       'orderdate': str(orderdate)
-                       }
+                       'maxdate': maxdate}
             return render(request, r'nlaws/combine.html', context)
         
         except:
@@ -90,18 +93,18 @@ class Combine(LoginRequiredMixin, View):
 
     def post(self, request, *args, **qwargs):
         
-        try:
-            orderdate = utils.date_from_string(request.POST['orderdate'])
-            query = Invoice.objects.filter(order__order_date__gte=orderdate).values('product__name', 'quantity')
-            dict = {}
-            dicts = [{key['product__name']: key['quantity']} for key in query]
-            combined_list = utils.merge_dicts(*dicts)
-            
-            context = {'orderdate': orderdate, 'list': combined_list, 'title': 'Combined order'}
-            
-            return render(request, r'nlaws/invoice.html', context)
-        except:
-            return HttpResponse(traceback.format_exc())
+        orderdate = utils.date_from_string(request.POST['maxdate'])
+        today = date.today()
+        query = Invoice.objects.filter(order__order_date__gte=today)
+        dicts = [{line.product: line.quantity} for line in query]
+        combined_list = utils.merge_dicts(*dicts)
+        invoice_list = [{'product': key, 'quantity': combined_list[key]} 
+                        for key in combined_list]
+        context = {'orderdate': orderdate, 'invoice_list': invoice_list,
+                   'title': 'Combined order', 'sender': 'Combine'}
+
+        return render(request, r'nlaws/invoice.html', context)
+# debug        return HttpResponse(traceback.format_exc())
 
 
 class ViewList(LoginRequiredMixin, View):
@@ -113,17 +116,17 @@ class ViewList(LoginRequiredMixin, View):
         else:
             orderdate = utils.date_from_string(orderdate)
             
-        query = Invoice.objects.filter(order__order_date__gte=orderdate,
+        query = Invoice.objects.filter(order__order_date=orderdate,
                                        order__customer=request.user)
                                             
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
         orderdate = str(orderdate)
-        order_list = [{dict['product__name']: dict['quantity']} for dict in query.values('product__name', 'quantity')]
-        list = utils.merge_dicts(*order_list)
+#        order_list = [{dict['product__name']: dict['quantity']} for dict in query.values('product__name', 'quantity')]
+#        list = utils.merge_dicts(*order_list)
         username = request.user.username
-        context = {'list': list,
-                   'orderdate': orderdate,
-                   'title': "{0}'s order for".format(username)}
+        context = {'invoice_list': query, 'orderdate': orderdate,
+                   'title': "{0}'s order ".format(username),
+                   'editable': True}
         return render(request, 'nlaws/invoice.html', context)
 
 
