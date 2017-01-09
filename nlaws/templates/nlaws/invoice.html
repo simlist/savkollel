@@ -11,6 +11,8 @@
                 </li>
             {% endfor %}
         </ul>
+        {% if editable %}
         <button type="submit" class="btn btn-warning">Edit</button>
+        {%endif%}
     </form>
 {%endblock%}

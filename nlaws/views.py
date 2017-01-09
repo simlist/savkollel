@@ -34,7 +34,7 @@ class ShoppingList(LoginRequiredMixin, View):
             saved_dict = {urllib.unquote(n): int(saved_dict[n][0]) for n in saved_dict}  #dict comprehension
         products = Product.objects.all()
 #        product_list = [{'id': str(n.id), 'name': urllib.unquote(n.name), 'value': int(saved_dict.get(n.name, [0,])[0])} for n in products]
-        invoice = [{'product': product, 'quantity': saved_dict.get(product.name, 0)}
+        invoice = [{'product': product, 'quantity': saved_dict.get(product.name, '')}
                    for product in products]
         context = {'orderdate': orderdate, 'invoice': invoice}
         return render(request, 'nlaws/product_list.html', context)
@@ -53,11 +53,11 @@ class ShoppingList(LoginRequiredMixin, View):
                 order.full_clean()
                 order.save()
                 for key in data:
-                    quantity = int(data[key])
+                    quantity = data[key]
                     if quantity:
                         invoice = Invoice(order=order,
                                           product=Product.objects.get(pk=int(key)),
-                                          quantity=quantity)
+                                          quantity=int(quantity))
                         invoice.full_clean()
                         invoice.save()
                     
@@ -70,16 +70,9 @@ class Combine(LoginRequiredMixin, View):
     
     def get(self, request, *args, **kwargs):
         try:
-            orderdate = request.GET.get('orderdate')
-            if orderdate is None:
-                orderdate = date.today()
-            else:
-                orderdatelist = utils.date_from_string(orderdate)
-                orderdate = date(*orderdatelist)
-        
-            orders = Order.objects.filter(order_date__gte=orderdate)
-            maxdate = orders.aggregate(Max('order_date'))['order_date__max']
-            orderdate = str(maxdate)
+            today = date.today()
+            orders = Order.objects.filter(order_date__gte=today)
+            maxdate = str(orders.aggregate(Max('order_date'))['order_date__max'])
             actives = [order.customer.username for order in orders]
             users = [user.username for user in User.objects.all()]
             customers_status = {}
@@ -92,8 +85,7 @@ class Combine(LoginRequiredMixin, View):
                                            'format': 'list-group-item-danger'}
                                            
             context = {'customers_status': customers_status,
-                       'orderdate': str(orderdate)
-                       }
+                       'maxdate': maxdate}
             return render(request, r'nlaws/combine.html', context)
         
         except:
@@ -101,19 +93,18 @@ class Combine(LoginRequiredMixin, View):
 
     def post(self, request, *args, **qwargs):
         
-        try:
-            orderdate = utils.date_from_string(request.POST['orderdate'])
-            query = Invoice.objects.filter(order__order_date__gte=orderdate)
-            dicts = [{line.product: line.quantity} for line in query]
-            combined_list = utils.merge_dicts(*dicts)
-            invoice_list = [{'product': key, 'quantity': combined_list[key]} 
-                            for key in combined_list]
-            context = {'orderdate': orderdate, 'invoice_list': invoice_list,
-                       'title': 'Combined order', 'sender': 'Combine'}
-            
-            return render(request, r'nlaws/invoice.html', context)
-        except:
-            return HttpResponse(traceback.format_exc())
+        orderdate = utils.date_from_string(request.POST['maxdate'])
+        today = date.today()
+        query = Invoice.objects.filter(order__order_date__gte=today)
+        dicts = [{line.product: line.quantity} for line in query]
+        combined_list = utils.merge_dicts(*dicts)
+        invoice_list = [{'product': key, 'quantity': combined_list[key]} 
+                        for key in combined_list]
+        context = {'orderdate': orderdate, 'invoice_list': invoice_list,
+                   'title': 'Combined order', 'sender': 'Combine'}
+
+        return render(request, r'nlaws/invoice.html', context)
+# debug        return HttpResponse(traceback.format_exc())
 
 
 class ViewList(LoginRequiredMixin, View):
@@ -125,7 +116,7 @@ class ViewList(LoginRequiredMixin, View):
         else:
             orderdate = utils.date_from_string(orderdate)
             
-        query = Invoice.objects.filter(order__order_date__gte=orderdate,
+        query = Invoice.objects.filter(order__order_date=orderdate,
                                        order__customer=request.user)
                                             
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
@@ -135,7 +126,7 @@ class ViewList(LoginRequiredMixin, View):
         username = request.user.username
         context = {'invoice_list': query, 'orderdate': orderdate,
                    'title': "{0}'s order ".format(username),
-                   'sender': 'ViewList'}
+                   'editable': True}
         return render(request, 'nlaws/invoice.html', context)
 
 
