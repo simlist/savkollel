@@ -13,7 +13,7 @@
                 <label for="pickupdate" class="control-label">Date for pickup:</label>
             </div>
             <div class="col-xs-6 col-md-3">
-                <input type="text" class="form-control" name="pickupdate" id="pickupdate" placeholder="Click for date" readonly value={{orderdate}}>
+                <input type="text" class="form-control required" name="pickupdate" id="pickupdate" placeholder="Click for date" required value={{orderdate}}>
             </div>
         </div>
     {% for line in invoice %}
@@ -37,6 +37,8 @@
 {%block scripts%}
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script>
-    $(function () { $("#pickupdate").datepicker({dateFormat:"yy-mm-dd"}); });
+    $(function () {
+        $("#pickupdate").focus(function (e) { e.preventDefault(); }).datepicker({ dateFormat: "yy-mm-dd" });
+    });
 </script>
 {%endblock%}
