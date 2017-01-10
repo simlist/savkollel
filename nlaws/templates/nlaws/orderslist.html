@@ -6,8 +6,15 @@
     {% for order in orderlist %}
     <li class="list-group-item">
         <a href="{% url 'nlaws:viewlist' %}?order={{order.id| urlencode}}">{{order.date}}</a>
-        <a class="btn btn-danger" href="{% url 'nlaws:deleteorder'%}?order={{order.id| urlencode}}">Delete Order</a>
+        <a class="btn btn-danger confirm" href="{% url 'nlaws:deleteorder'%}?order={{order.id| urlencode}}">Delete Order</a>
     </li>
     </ul>
     {%endfor%}
-{%endblock%} 
+{%endblock%}
+{% block scripts %}
+<script>
+    $(function () {$(".confirm").on("click",  function() {
+        return confirm("Are you sure you want to delete this order?");
+    }) });
+</script>
+{%endblock%}
