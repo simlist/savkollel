@@ -38,7 +38,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 <script>
     $(function () {
-        $("#pickupdate").keydown(function (e) { e.preventDefault(); }).datepicker({ dateFormat: "yy-mm-dd" });
+        $("#pickupdate").datepicker({ dateFormat: "yy-mm-dd" }).keydown(function (e) { e.preventDefault(); });
     });
 </script>
 {%endblock%}
