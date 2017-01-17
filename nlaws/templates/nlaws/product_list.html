@@ -40,7 +40,7 @@
     $(function () {
         $("#pickupdate").datepicker({ dateFormat: "yy-mm-dd" }).focus(function () {
             $(this).trigger('blur');
-        }).keydown(function (e) { e.preventDefault(); });
+        });
     });
 </script>
 {%endblock%}
