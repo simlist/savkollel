@@ -34,8 +34,8 @@ class ShoppingList(LoginRequiredMixin, View):
             order_id = saved_dict.pop('order', [None,])[0]
             orderdate = saved_dict.pop('orderdate', ['',])[0]
             saved_dict = {urllib.unquote(n): int(saved_dict[n][0]) for n in saved_dict}  #dict comprehension
+
         products = Product.objects.all()
-#        product_list = [{'id': str(n.id), 'name': urllib.unquote(n.name), 'value': int(saved_dict.get(n.name, [0,])[0])} for n in products]
         invoice = [{'product': product, 'quantity': saved_dict.get(product.name, '')}
                    for product in products]
         context = {'orderdate': orderdate, 'invoice': invoice,
@@ -113,7 +113,6 @@ class Combine(LoginRequiredMixin, View):
                    'title': 'Combined order', 'sender': 'Combine'}
 
         return render(request, r'nlaws/invoice.html', context)
-# debug        return HttpResponse(traceback.format_exc())
 
 
 class ViewList(LoginRequiredMixin, View):
@@ -124,8 +123,6 @@ class ViewList(LoginRequiredMixin, View):
                                        order__customer=request.user)
                                             
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
-#        order_list = [{dict['product__name']: dict['quantity']} for dict in query.values('product__name', 'quantity')]
-#        list = utils.merge_dicts(*order_list)
         username = request.user.username
         context = {'invoice_list': query, 'orderdate': orderdate,
                    'title': "{0}'s order ".format(username),
