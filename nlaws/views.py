@@ -109,6 +109,7 @@ class Combine(LoginRequiredMixin, View):
         combined_list = utils.merge_dicts(*dicts)
         invoice_list = [{'product': key, 'quantity': combined_list[key]} 
                         for key in combined_list]
+        invoice_list.sort(key=lambda e: e['product'].name)
         context = {'orderdate': orderdate, 'invoice_list': invoice_list,
                    'title': 'Combined order', 'sender': 'Combine'}
 
