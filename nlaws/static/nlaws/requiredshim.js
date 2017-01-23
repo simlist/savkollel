@@ -3,7 +3,11 @@
         if (!e.target.checkValidity()) {
             $('.required').each(function () {
                 var self = $(this);
-                if (self.val() == '') { e.preventDefault(); self.focus(); alert('Please choose the pickup date')}
+                if (self.val() == '') {
+                    e.preventDefault();
+                    alert('Please choose a pickup date');
+                    self.focus();
+                }
             });
         }
     });
