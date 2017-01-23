@@ -1,10 +1,11 @@
 ﻿$(function(){
-    if (!('required' in document.createElement('input'))) {
-        $('form').on('submit', function (e) {
+    $('form').submit(function (e) {
+        if (!e.target.checkValidity()) {
             $('.required').each(function () {
                 var self = $(this);
-                if (self.val() === '') { e.preventDefault(); self.focus(); }
+                if (self.val() == '') { e.preventDefault(); self.focus(); alert('Please choose the pickup date')}
             });
-        });
-    }
+        }
+    });
+    
 });
