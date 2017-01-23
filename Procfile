@@ -1,0 +1,1 @@
+web: gunicorn savannahkollel.wsgi --log-file -
