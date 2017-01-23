@@ -1,10 +1,10 @@
-﻿$(function () {
+﻿$(function(){
     if (!('required' in document.createElement('input'))) {
-        $('form').submit(function (e) {
-            $('[required]').each(function () {
-                if ($(this).val() === '') { e.preventDefault(); }
+        $('form').on('submit', function (e) {
+            $('.required').each(function () {
+                var self = $(this);
+                if (self.val() === '') { e.preventDefault(); self.focus(); }
             });
         });
     }
-
 });
