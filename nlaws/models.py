@@ -36,5 +36,5 @@ class Invoice(models.Model):
                                     str(self.product))
 
     class Meta:
-        ordering = ['product']
+        ordering = ['-order__order_date', 'product']
 
