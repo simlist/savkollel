@@ -24,6 +24,7 @@ def index(request):
 
 
 class ShoppingList(LoginRequiredMixin, View):
+    """Create an order."""
 
     def get(self, request, *args, **kwargs):
         saved_dict = {}
@@ -117,6 +118,7 @@ class Combine(LoginRequiredMixin, View):
 
 
 class ViewList(LoginRequiredMixin, View):
+    """View a single order."""
     
     def get(self, request, *args, **qwargs):
         order_id = request.GET['order']
