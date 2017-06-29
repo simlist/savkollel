@@ -56,11 +56,12 @@ class ShoppingList(LoginRequiredMixin, View):
                 order_id = data.pop('order', '')
                 if order_id:
                     order = Order.objects.get(pk=int(order_id[0]))
+                    order.order_date = pickupdate
                     Invoice.objects.filter(order=order).delete()
                 else:
                     order = Order(order_date=pickupdate, customer=request.user)
-                    order.full_clean()
-                    order.save()
+                order.full_clean()
+                order.save()
                 
                 for key in data:
                     quantity = data[key]
