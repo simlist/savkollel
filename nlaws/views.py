@@ -62,16 +62,16 @@ class ShoppingList(LoginRequiredMixin, View):
                     order = Order(order_date=pickupdate, customer=request.user)
                 order.full_clean()
                 order.save()
-                
+
                 for key in data:
                     quantity = data[key]
-                    if quantity:
+                    if quantity and int(quantity):
                         invoice = Invoice(order=order,
                                           product=Product.objects.get(pk=int(key)),
                                           quantity=int(quantity))
                         invoice.full_clean()
                         invoice.save()
-                    
+
                 return render(request, 'nlaws/index.html', {'text': 'success'})
         except:
             return HttpResponse(traceback.format_exc())
