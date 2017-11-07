@@ -24,6 +24,7 @@ def index(request):
 
 
 class ShoppingList(LoginRequiredMixin, View):
+    """Create an order."""
 
     def get(self, request, *args, **kwargs):
         saved_dict = {}
@@ -55,21 +56,22 @@ class ShoppingList(LoginRequiredMixin, View):
                 order_id = data.pop('order', '')
                 if order_id:
                     order = Order.objects.get(pk=int(order_id[0]))
+                    order.order_date = pickupdate
                     Invoice.objects.filter(order=order).delete()
                 else:
                     order = Order(order_date=pickupdate, customer=request.user)
-                    order.full_clean()
-                    order.save()
-                
+                order.full_clean()
+                order.save()
+
                 for key in data:
                     quantity = data[key]
-                    if quantity:
+                    if quantity and int(quantity):
                         invoice = Invoice(order=order,
                                           product=Product.objects.get(pk=int(key)),
                                           quantity=int(quantity))
                         invoice.full_clean()
                         invoice.save()
-                    
+
                 return render(request, 'nlaws/index.html', {'text': 'success'})
         except:
             return HttpResponse(traceback.format_exc())
@@ -117,6 +119,7 @@ class Combine(LoginRequiredMixin, View):
 
 
 class ViewList(LoginRequiredMixin, View):
+    """View a single order."""
     
     def get(self, request, *args, **qwargs):
         order_id = request.GET['order']
