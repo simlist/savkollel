@@ -1,0 +1,15 @@
+{% extends 'nlaws/base.html %}
+{% block title %}Order Checklist{%endblock%}
+{% block content %}
+  <h2 class="text-center">Order Checklist</h2>
+	<form class="form-horizontal" action="{% url 'nlaws:checklist' %} method="post">
+    {% csrf_token %}
+		{% for line in orders_list %}
+		  <div class="form-group">
+				<input type="checkbox" name="{{line.product.pk}}" id="{{line.product.pk}}">
+				<label for="line.product.pk">{{line.product.name}}</label>
+	    </div>
+		{% endfor %}
+	</form>
+
+{%endblock%}

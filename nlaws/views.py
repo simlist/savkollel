@@ -94,7 +94,7 @@ class Combine(LoginRequiredMixin, View):
                 else:
                     customers_status[u] = {'status': 'No list submitted',
                                            'format': 'list-group-item-danger'}
-                                           
+
             context = {'customers_status': customers_status,
                        'maxdate': maxdate}
             return render(request, r'nlaws/combine.html', context)
@@ -109,7 +109,7 @@ class Combine(LoginRequiredMixin, View):
         query = Invoice.objects.filter(order__order_date__gte=today)
         dicts = [{line.product: line.quantity} for line in query]
         combined_list = utils.merge_dicts(*dicts)
-        invoice_list = [{'product': key, 'quantity': combined_list[key]} 
+        invoice_list = [{'product': key, 'quantity': combined_list[key]}
                         for key in combined_list]
         invoice_list.sort(key=lambda e: e['product'].name)
         context = {'orderdate': orderdate, 'invoice_list': invoice_list,
@@ -120,12 +120,11 @@ class Combine(LoginRequiredMixin, View):
 
 class ViewList(LoginRequiredMixin, View):
     """View a single order."""
-    
+
     def get(self, request, *args, **qwargs):
         order_id = request.GET['order']
         query = Invoice.objects.filter(order__pk=order_id,
                                        order__customer=request.user)
-                                            
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
         username = request.user.username
         context = {'invoice_list': query, 'orderdate': orderdate,
@@ -135,7 +134,7 @@ class ViewList(LoginRequiredMixin, View):
 
 
 class ViewOrders(LoginRequiredMixin, View):
-    
+
     def get(self, request, *args, **kwargs):
 
         query = Order.objects.filter(customer=request.user)
@@ -159,7 +158,6 @@ class AddProduct(LoginRequiredMixin, View):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         name=request.POST['productname']
-            
         try:
             with transaction.atomic():
                 product = Product(name=name)
@@ -168,3 +166,11 @@ class AddProduct(LoginRequiredMixin, View):
                 return render(request, 'nlaws/index.html', {'text': 'Success!'})
         except:
             return render(request, 'nlaws/index.html', {'text': 'There were errors'})
+
+
+class Checklist(LoginRequiredMixin, View):
+    def get(self, request, order_id):
+        order = int(order_id)
+        invoice_list = Invoice.objects.Filter(order__id=order)
+        return render request, 'nlaws/checklist.html', {'order_list':
+                                                        invoice_list})
