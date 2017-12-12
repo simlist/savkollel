@@ -4,12 +4,11 @@
   <h2 class="text-center">Order Checklist</h2>
 	<form class="form-horizontal" action="{% url 'nlaws:checklist' order_id %} method="post">
     {% csrf_token %}
-		{% for line in orders_list %}
+		{% for line in order_list %}
 		  <div class="form-group">
 				<input type="checkbox" name="{{line.product.pk}}" id="{{line.product.pk}}">
-				<label for="line.product.pk">{{line.product.name}}</label>
+				<label for="line.product.pk">{{line.product.name}} {{line.quantity}}</label>
 	    </div>
 		{% endfor %}
 	</form>
-
 {%endblock%}
