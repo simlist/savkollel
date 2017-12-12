@@ -1,6 +1,6 @@
 from datetime import date
 import urllib
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_list_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -122,14 +122,14 @@ class ViewList(LoginRequiredMixin, View):
     """View a single order."""
 
     def get(self, request, *args, **qwargs):
-        order_id = request.GET['order']
+        order_id = int(request.GET['order'][0])
         query = Invoice.objects.filter(order__pk=order_id,
                                        order__customer=request.user)
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
         username = request.user.username
         context = {'invoice_list': query, 'orderdate': orderdate,
                    'title': "{0}'s order ".format(username),
-                   'order': order_id,'editable': True}
+                   'order_id': order_id,'editable': True}
         return render(request, 'nlaws/invoice.html', context)
 
 
@@ -170,7 +170,8 @@ class AddProduct(LoginRequiredMixin, View):
 
 class Checklist(LoginRequiredMixin, View):
     def get(self, request, order_id):
-        order = int(order_id)
-        invoice_list = Invoice.objects.Filter(order__id=order)
-        return render request, 'nlaws/checklist.html', {'order_list':
-                                                        invoice_list})
+        order_list = get_list_or_404(Invoice, order__id=order_id)
+        return render(
+                      request, 'nlaws/checklist.html',
+                      {'order_list': order_list, 'order_id': order_id}
+                     )

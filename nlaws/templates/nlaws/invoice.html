@@ -3,7 +3,7 @@
 {%block content%}
     <h2 class="text-center">{{title}} for {{orderdate|date:"l M. j, Y"}}</h2>
     <form method="get" action={% url 'nlaws:shoppinglist' %}>
-        <input type="hidden" name="order" value="{{order}}">
+        <input type="hidden" name="order" value="{{order_id}}">
         <input type="hidden" name="orderdate" value="{{orderdate|date:"Y-n-j"}}">
         <ul>
             {% for line in invoice_list %}
@@ -15,5 +15,8 @@
         {% if editable %}
         <button type="submit" class="btn btn-warning">Edit</button>
         {%endif%}
+        <a href="{% url 'nlaws:checklist' order_id %}"
+        class="btn btn-success">
+          Create checklist</a>
     </form>
 {%endblock%}
