@@ -1,0 +1,10 @@
+{% extends 'nlaws/base.html' %}
+{% block title %}Missing List{%endblock%}
+{% block content %}
+  <h2 class="text-center">Still missing</h2>
+  <ul>
+    {% for line in missing_list %}
+      <li>{{line.product.name}}: {{line.quantity}}</li>
+    {%endfor%}
+  </ul>
+{%endblock%}

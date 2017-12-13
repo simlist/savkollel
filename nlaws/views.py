@@ -98,12 +98,12 @@ class Combine(LoginRequiredMixin, View):
             context = {'customers_status': customers_status,
                        'maxdate': maxdate}
             return render(request, r'nlaws/combine.html', context)
-        
+
         except:
             return HttpResponse(traceback.format_exc())
 
     def post(self, request, *args, **qwargs):
-        
+
         orderdate = utils.date_from_string(request.POST['maxdate'])
         today = date.today()
         query = Invoice.objects.filter(order__order_date__gte=today)
@@ -122,7 +122,7 @@ class ViewList(LoginRequiredMixin, View):
     """View a single order."""
 
     def get(self, request, *args, **qwargs):
-        order_id = int(request.GET['order'][0])
+        order_id = request.GET['order']
         query = Invoice.objects.filter(order__pk=order_id,
                                        order__customer=request.user)
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
@@ -175,3 +175,11 @@ class Checklist(LoginRequiredMixin, View):
                       request, 'nlaws/checklist.html',
                       {'order_list': order_list, 'order_id': order_id}
                      )
+
+    def post(self, request, order_id):
+        invoice_list = self.request.POST.getlist('invoice_line')
+        order_invoice = Invoice.objects.filter(order__id=order_id)
+        missing_list = order_invoice.exclude(pk__in=invoice_list)
+        context = {'missing_list': missing_list, 'order_id': order_id}
+        return render(request, 'nlaws/checklist_result.html', context)
+
