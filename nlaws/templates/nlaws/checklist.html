@@ -6,8 +6,12 @@
     {% csrf_token %}
 		{% for line in order_list %}
 	  	<div class="checkbox">
-					<label><input type="checkbox" name="invoice_line" value="{{line.pk}}" id="{{line.product.pk}}"> {{line.product.name}}: {{line.quantity}}</label>
+					<label><input type="checkbox" name="invoice_line" value="{{line.pk}}"> {{line.product.name}}: {{line.quantity}}</label>
 	    </div>
+			<div class="hidden invoice-detail">
+				<label for="{{line.product.name}}">I received:</label>
+				<input type="number" class="form-control" value="{{line.quantity}}" name="{{line.pk}}" id="{{line.product.name}}" min="1" max="{{line.quantity}}" step="1" required>
+			</div>
 		{% endfor %}
 		<button type="submit" class="btn btn-primary">submit</button>
 	</form>
