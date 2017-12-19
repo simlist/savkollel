@@ -11,7 +11,7 @@
 	    </div>
 			<div class="hidden invoice-detail">
 				<label for="{{line.product.name}}">I received:</label>
-				<input type="number" class="form-control" value="{{line.quantity}}" name="{{line.pk}}" id="{{line.product.name}}" min="1" max="{{line.quantity}}" step="1" required>
+				<input type="number" class="form-control" value="{{line.quantity}}" name="{{line.pk}}" id="{{line.product.name}}" min="1" max="{{line.quantity}}" step="1" required disabled>
 			</div>
 		{% endfor %}
 		<button type="submit" class="btn btn-primary">submit</button>
