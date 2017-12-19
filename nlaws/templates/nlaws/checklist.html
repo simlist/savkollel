@@ -1,4 +1,5 @@
 {% extends 'nlaws/base.html' %}
+{% load static %}
 {% block title %}Order Checklist{%endblock%}
 {% block content %}
   <h2 class="text-center">Order Checklist</h2>
@@ -16,3 +17,4 @@
 		<button type="submit" class="btn btn-primary">submit</button>
 	</form>
 {%endblock%}
+{% block scripts %}<script src="{% static 'nlaws/checkboxes.js' %}"></script>{%endblock%}
