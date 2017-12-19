@@ -178,7 +178,6 @@ class Checklist(LoginRequiredMixin, View):
 
     def post(self, request, order_id):
         post = self.request.POST
-        invoice_list = post.getlist('invoice_line')
         order_invoice = list(Invoice.objects.filter(order__id=order_id))
         for line in order_invoice:
             if str(line.pk) in post:
