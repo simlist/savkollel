@@ -177,9 +177,14 @@ class Checklist(LoginRequiredMixin, View):
                      )
 
     def post(self, request, order_id):
-        invoice_list = self.request.POST.getlist('invoice_line')
-        order_invoice = Invoice.objects.filter(order__id=order_id)
-        missing_list = order_invoice.exclude(pk__in=invoice_list)
-        context = {'missing_list': missing_list, 'order_id': order_id}
+        post = self.request.POST
+        invoice_list = post.getlist('invoice_line')
+        order_invoice = list(Invoice.objects.filter(order__id=order_id))
+        for line in order_invoice:
+            if str(line.pk) in post:
+                if line.quantity > int(post.get(str(line.pk))):
+                    line.quantity -= int(post.get(str(line.pk)))
+                else:
+                    del line
+        context = {'missing_list': order_invoice, 'order_id': order_id}
         return render(request, 'nlaws/checklist_result.html', context)
-
