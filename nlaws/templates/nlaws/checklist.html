@@ -3,7 +3,7 @@
 {% block title %}Order Checklist{%endblock%}
 {% block content %}
   <h2 class="text-center">Order Checklist</h2>
-	<form action="{% url 'nlaws:checklist' order_id %}" method="post">
+	<form action="{% url 'nlaws:checklist' order_id %}" method="post" autocomplete="off">
     {% csrf_token %}
 		{% for line in order_list %}
 	  	<div class="checkbox">
