@@ -7,14 +7,17 @@
     {% csrf_token %}
 		{% for line in order_list %}
 	  	<div class="checkbox">
-					<label><input type="checkbox" name="invoice_line" value="{{line.pk}}"> {{line.product.name}}: {{line.quantity}}</label>
+				<label><input type="checkbox" name="invoice_line" value="{{line.pk}}"> {{line.product.name}}: {{line.quantity}}</label>
 	    </div>
-			<div class="hidden invoice-detail">
-				<label for="{{line.product.name}}">I received:</label>
-				<input type="number" class="form-control" value="{{line.quantity}}" name="{{line.pk}}" id="{{line.product.name}}" min="1" max="{{line.quantity}}" step="1" required disabled>
-			</div>
+			<div class="row hidden">
+			  <div class="invoice-detail col-xs-offset-1 col-xs-3 col-sm-2 col-md-1">
+			  	<label for="{{line.product.name}}">I got:</label>
+			  	<input type="number" class="form-control" value="{{line.quantity}}" name="{{line.pk}}" id="{{line.product.name}}"
+			  	min="1" max="{{line.quantity}}" step="1" required disabled>
+			  </div>
+		  </div>
 		{% endfor %}
-		<button type="submit" class="btn btn-primary">submit</button>
+		<p><button type="submit" class="btn btn-primary">submit</button></p>
 	</form>
 {%endblock%}
 {% block scripts %}<script src="{% static 'nlaws/checkboxes.js' %}"></script>{%endblock%}
