@@ -1,6 +1,6 @@
 from datetime import date
 import urllib
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_list_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -94,22 +94,22 @@ class Combine(LoginRequiredMixin, View):
                 else:
                     customers_status[u] = {'status': 'No list submitted',
                                            'format': 'list-group-item-danger'}
-                                           
+
             context = {'customers_status': customers_status,
                        'maxdate': maxdate}
             return render(request, r'nlaws/combine.html', context)
-        
+
         except:
             return HttpResponse(traceback.format_exc())
 
     def post(self, request, *args, **qwargs):
-        
+
         orderdate = utils.date_from_string(request.POST['maxdate'])
         today = date.today()
         query = Invoice.objects.filter(order__order_date__gte=today)
         dicts = [{line.product: line.quantity} for line in query]
         combined_list = utils.merge_dicts(*dicts)
-        invoice_list = [{'product': key, 'quantity': combined_list[key]} 
+        invoice_list = [{'product': key, 'quantity': combined_list[key]}
                         for key in combined_list]
         invoice_list.sort(key=lambda e: e['product'].name)
         context = {'orderdate': orderdate, 'invoice_list': invoice_list,
@@ -120,22 +120,21 @@ class Combine(LoginRequiredMixin, View):
 
 class ViewList(LoginRequiredMixin, View):
     """View a single order."""
-    
+
     def get(self, request, *args, **qwargs):
         order_id = request.GET['order']
         query = Invoice.objects.filter(order__pk=order_id,
                                        order__customer=request.user)
-                                            
         orderdate = query.aggregate(Max('order__order_date'))['order__order_date__max']
         username = request.user.username
         context = {'invoice_list': query, 'orderdate': orderdate,
                    'title': "{0}'s order ".format(username),
-                   'order': order_id,'editable': True}
+                   'order_id': order_id,'editable': True}
         return render(request, 'nlaws/invoice.html', context)
 
 
 class ViewOrders(LoginRequiredMixin, View):
-    
+
     def get(self, request, *args, **kwargs):
 
         query = Order.objects.filter(customer=request.user)
@@ -159,7 +158,6 @@ class AddProduct(LoginRequiredMixin, View):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         name=request.POST['productname']
-            
         try:
             with transaction.atomic():
                 product = Product(name=name)
@@ -168,3 +166,26 @@ class AddProduct(LoginRequiredMixin, View):
                 return render(request, 'nlaws/index.html', {'text': 'Success!'})
         except:
             return render(request, 'nlaws/index.html', {'text': 'There were errors'})
+
+
+class Checklist(LoginRequiredMixin, View):
+    def get(self, request, order_id):
+        order_list = get_list_or_404(Invoice, order__id=order_id)
+        return render(
+                      request, 'nlaws/checklist.html',
+                      {'order_list': order_list, 'order_id': order_id}
+                     )
+
+    def post(self, request, order_id):
+        post = request.POST
+        order_invoice = list(Invoice.objects.filter(order__id=order_id))
+        missing_list = []
+        for line in order_invoice:
+            if str(line.pk) in post:
+                if line.quantity > int(post[str(line.pk)]):
+                    line.quantity -= int(post[str(line.pk)])
+                    missing_list.append(line)
+            else:
+                missing_list.append(line)
+        context = {'missing_list': missing_list, 'order_id': order_id}
+        return render(request, 'nlaws/checklist_result.html', context)
