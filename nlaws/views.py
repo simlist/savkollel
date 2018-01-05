@@ -115,7 +115,7 @@ class Combine(LoginRequiredMixin, View):
         context = {'orderdate': orderdate, 'invoice_list': invoice_list,
                    'title': 'Combined order', 'sender': 'Combine'}
 
-        return render(request, r'nlaws/invoice.html', context)
+        return render(request, r'nlaws/invoice_base.html', context)
 
 
 class ViewList(LoginRequiredMixin, View):
@@ -130,7 +130,7 @@ class ViewList(LoginRequiredMixin, View):
         context = {'invoice_list': query, 'orderdate': orderdate,
                    'title': "{0}'s order ".format(username),
                    'order_id': order_id,'editable': True}
-        return render(request, 'nlaws/invoice.html', context)
+        return render(request, 'nlaws/invoice_checklistable.html', context)
 
 
 class ViewOrders(LoginRequiredMixin, View):
