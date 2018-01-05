@@ -1,0 +1,6 @@
+{% extends 'nlaws/invoice_base.html' %}
+{% block buttons %}
+<a href="{% url 'nlaws:checklist' order_id %}" class="btn btn-success">
+	Create checklist
+</a>
+{% endblock %}
