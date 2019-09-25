@@ -85,7 +85,7 @@ class Combine(LoginRequiredMixin, View):
             orders = Order.objects.filter(order_date__gte=today)
             maxdate = str(orders.aggregate(Max('order_date'))['order_date__max'])
             actives = [order.customer.username for order in orders]
-            users = [user.username for user in User.objects.all()]
+            users = [user.username for user in User.objects.filter(active=True)]
             customers_status = {}
             for u in users:
                 if u in actives:
